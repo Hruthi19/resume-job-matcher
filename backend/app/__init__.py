@@ -10,7 +10,7 @@ def create_app():
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-    CORS(app, origins = ["https://localhost:5000"])
+    CORS(app, origins = ["http://localhost:5000"])
 
     from app.routes import main
     app.register_blueprint(main.bp)
