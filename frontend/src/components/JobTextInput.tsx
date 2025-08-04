@@ -6,9 +6,10 @@ import axios from 'axios';
 interface JobTextInputProps {
   onTextChange: (text: string) => void;
   onAnalysisComplete?: (result: any) => void;
+  isResumeUploaded: boolean;
 }
 
-const JobTextInput: React.FC<JobTextInputProps> = ({ onTextChange, onAnalysisComplete }) => {
+const JobTextInput: React.FC<JobTextInputProps> = ({ onTextChange, onAnalysisComplete, isResumeUploaded }) => {
   const [jobText, setJobText] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
@@ -54,6 +55,8 @@ const JobTextInput: React.FC<JobTextInputProps> = ({ onTextChange, onAnalysisCom
     return null;
   };
 
+  const isAnalyzeDisabled = !isResumeUploaded || jobText.length < 50;
+
   return (
     <div className="w-full max-w-2xl">
       <h3 className="text-lg font-semibold mb-4 text-gray-700 flex items-center">
@@ -80,9 +83,9 @@ const JobTextInput: React.FC<JobTextInputProps> = ({ onTextChange, onAnalysisCom
           {getStatusIcon()}
           <button
             onClick={analyzeJobDescription}
-            disabled={analyzing}
+            disabled={analyzing || isAnalyzeDisabled}
             className={`px-4 py-2 rounded text-sm transition-colors ${
-              analyzing
+                analyzing || isAnalyzeDisabled
                 ? 'bg-gray-400 text-white cursor-not-allowed'
                 : 'bg-blue-500 text-white hover:bg-blue-600'
             }`}

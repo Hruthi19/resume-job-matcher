@@ -10,7 +10,7 @@ class ResumeParser:
         self.allowed_extensions = {'pdf', 'docx', 'doc'}
     
     def is_allowed_file(self, filename):
-        return '.' in filename.rsplit('.',1)[1].lower() in self.allowed_extensions
+        return '.' in filename and filename.rsplit('.',1)[1].lower() in self.allowed_extensions
 
     def extract_text_from_pdf(self, file_path):
         try:
@@ -50,8 +50,10 @@ class ResumeParser:
         info['emails'] = emails
 
         phone_pattern = r'(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}'
-        phones = re.findall(phone_pattern, text)
-        info['phones'] = [phone[0] + phone[1] if len(phone) > 1 else phone for phone in phones]
+        phones = re.finditer(phone_pattern, text)
+        info['phones'] = [match.group() for match in phones]
+
+        return info
     
     def parse_resume(self, file):
         """Main method"""
@@ -62,7 +64,7 @@ class ResumeParser:
                 raise ValueError("File type not allowed. Please upload a PDF or DOCX file.")
             
             #Temporary file
-            with tempfile.NamedTemporaryFile(delete = False, suffix = os.path.splittext(filename)[1]) as temp_file:
+            with tempfile.NamedTemporaryFile(delete = False, suffix = os.path.splitext(filename)[1]) as temp_file:
                 file.save(temp_file.name)
                 temp_file_path = temp_file.name
             

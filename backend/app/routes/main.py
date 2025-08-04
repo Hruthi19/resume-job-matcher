@@ -8,16 +8,16 @@ bp = Blueprint('main', __name__)
 resume_parser = ResumeParser()
 job_processor = JobDescriptionProcessor()
 
-@bp.route('/api/test', methods=['POST'])
+@bp.route('/test', methods=['POST'])
 def test_endpoint():
     data = request.json
     return jsonify({'received': data})
 
-@bp.route('/api/health', methods = ['GET'])
+@bp.route('/health', methods = ['GET'])
 def health_check():
     return jsonify({'status': 'healthy', 'message' : 'Resume Job Matcher API ia running'})
 
-@bp.route('/api/upload-resume', methods = ['POST'])
+@bp.route('/upload-resume', methods = ['POST'])
 def upload_resume():
     # Resume upload logic
     try:
@@ -43,7 +43,7 @@ def upload_resume():
     except Exception as e:
         return jsonify({'error': f'Server error: {str(e)}'}), 500
 
-@bp.route('/api/analyze-job', methods = ['POST'])
+@bp.route('/analyze-job', methods = ['POST'])
 def analyze_job():
     # job analysis logic
     try:
@@ -67,12 +67,12 @@ def analyze_job():
     except Exception as e:
         return jsonify({'error': f'Server error: {str(e)}'}), 500
 
-@bp.route('/api/match-score', methods = ['POST'])
+@bp.route('/match-score', methods = ['POST'])
 def get_match_score():
     # matching logic
     return jsonify({'message': 'Match socre endpoint - coming soon'})
 
-@bp.route('/api/test-nlp', methods = ['GET'])
+@bp.route('/test-nlp', methods = ['GET'])
 def test_nlp():
     # test nlp endpoint
     try:
