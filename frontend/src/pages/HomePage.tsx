@@ -3,10 +3,12 @@ import { Brain, Github, Star } from 'lucide-react';
 import FileUpload from '../components/FileUpload';
 import JobTextInput from '../components/JobTextInput';
 import ResultsDisplay from '../components/ResultsDisplay';
+import MatchScore from '../components/MatchScore'
 
 function App() {
   const [resumeData, setResumeData] = useState<any>(null);
   const [jobData, setJobData] = useState<any>(null);
+  const [matchData, setMatchData] = useState<any>(null);
   const [selectedResumeFile, setSelectedResumeFile] = useState<File | null>(null);
   const [jobText, setJobText] = useState<string>('');
 
@@ -16,6 +18,10 @@ function App() {
 
   const handleJobAnalysis = (result: any) => {
     setJobData(result);
+  };
+
+  const handleMatchComplete = (result: any) => {
+    setMatchData(result);
   };
 
   const handleResumeFileSelect = (file: File) => {
@@ -99,7 +105,7 @@ function App() {
             
             <div className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-400">
               <div className="w-3 h-3 rounded-full bg-gray-400" />
-              <span className="text-sm font-medium">AI Matching (Day 3)</span>
+              <span className="text-sm font-medium">AI Matching </span>
             </div>
           </div>
         </div>
@@ -171,11 +177,6 @@ function App() {
               </div>
               
               <div className="flex space-x-2">
-                {resumeData && jobData && (
-                  <button className="px-4 py-2 bg-purple-100 text-purple-800 rounded-lg text-sm font-medium cursor-not-allowed">
-                    Generate Match Score (Day 3)
-                  </button>
-                )}
                 <button
                   onClick={resetApplication}
                   className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors"
@@ -188,35 +189,19 @@ function App() {
         )}
 
         {/* Results Display */}
-        <ResultsDisplay resumeData={resumeData} jobData={jobData} />
+        <ResultsDisplay 
+        resumeData={resumeData} 
+        jobData={jobData} 
+        matchData = {matchData}
+        />
 
-        {/* Feature Preview */}
+        {/* Match score section */}
         {resumeData && jobData && (
-          <div className="mt-8 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6 border border-purple-200">
-            <div className="text-center">
-              <Brain className="mx-auto text-purple-500 mb-4" size={48} />
-              <h3 className="text-xl font-semibold text-purple-900 mb-2">
-                Coming Tomorrow: AI-Powered Matching! 🚀
-              </h3>
-              <p className="text-purple-700 mb-4">
-                Your resume and job description are ready for advanced AI analysis.
-              </p>
-              <div className="grid md:grid-cols-3 gap-4 text-sm">
-                <div className="bg-white bg-opacity-70 p-3 rounded-lg">
-                  <div className="font-medium text-purple-800">Skill Matching</div>
-                  <div className="text-purple-600">AI-powered skill comparison</div>
-                </div>
-                <div className="bg-white bg-opacity-70 p-3 rounded-lg">
-                  <div className="font-medium text-purple-800">Experience Analysis</div>
-                  <div className="text-purple-600">Context-aware matching</div>
-                </div>
-                <div className="bg-white bg-opacity-70 p-3 rounded-lg">
-                  <div className="font-medium text-purple-800">Match Score</div>
-                  <div className="text-purple-600">Percentage compatibility</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <MatchScore
+          resumeData = {resumeData}
+          jobData = {jobData}
+          onMatchComplete={handleMatchComplete}
+          />
         )}
 
         {/* Debug Information (Development only) */}
@@ -282,7 +267,7 @@ function App() {
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                <span>AI Matching: Coming Soon</span>
+                <span>AI Matching</span>
               </div>
             </div>
           </div>

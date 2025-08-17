@@ -4,10 +4,11 @@ import { Brain, Target, Lightbulb, FileText, Briefcase, Tag, Users, Building } f
 interface ResultsDisplayProps {
   resumeData?: any;
   jobData?: any;
+  matchData? : any;
 }
 
-const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ resumeData, jobData }) => {
-  if (!resumeData && !jobData) {
+const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ resumeData, jobData, matchData }) => {
+  if (!resumeData && !jobData && !matchData) {
     return (
       <div className="mt-16 bg-white rounded-lg shadow-lg p-8">
         <h2 className="text-2xl font-semibold mb-6 text-gray-800">Analysis Results</h2>
@@ -20,9 +21,10 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ resumeData, jobData }) 
             <h3 className="font-semibold text-green-800 mb-2">Job Analysis</h3>
             <p className="text-gray-600">Enter job description to see analysis</p>
           </div>
+          
           <div className="bg-purple-50 p-6 rounded-lg">
-            <h3 className="font-semibold text-purple-800 mb-2">Match Score</h3>
-            <p className="text-gray-600">Coming in Day 3!</p>
+            <h3 className="font-semibold text-purple-800 mb-2">AI Match Score</h3>
+            <p className="text-gray-600">Complete analysis to see AI matching!</p>
           </div>
         </div>
       </div>
@@ -79,33 +81,49 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ resumeData, jobData }) 
   };
 
   const renderEntities = (entities: any[]) => {
-    if (!entities || entities.length === 0) return null;
+    if (!entities || entities.length === 0) 
+      console.log("No entities found")
 
     const entityIcons = {
       'ORG': Building,
       'PERSON': Users,
       'GPE': Target,
-      'PRODUCT': Lightbulb
+      'PRODUCT': Lightbulb,
+      'TECH': Tag,     
+      'DEGREE': Brain
     };
+
+    const entityColors: Record<string, string> = {
+    'ORG': 'text-blue-600',
+    'PERSON': 'text-green-600',
+    'GPE': 'text-yellow-600',
+    'PRODUCT': 'text-purple-600',
+    'TECH': 'text-indigo-600',
+    'DEGREE': 'text-pink-600'
+  };
+
+    console.log("Entities received:", entities);
 
     return (
       <div className="mt-4">
-        <h4 className="font-medium text-gray-700 mb-2">Named Entities</h4>
-        <div className="space-y-1">
-          {entities.slice(0, 5).map((entity, index) => {
-            const IconComponent = entityIcons[entity.label as keyof typeof entityIcons] || Tag;
-            return (
-              <div key={index} className="flex items-center text-sm">
-                <IconComponent size={14} className="mr-2 text-gray-500" />
-                <span className="font-medium">{entity.text}</span>
-                <span className="ml-2 text-gray-500 text-xs">({entity.label})</span>
-              </div>
-            );
-          })}
-        </div>
+      <h4 className="font-medium text-gray-700 mb-2">Named Entities</h4>
+      <div className="space-y-1">
+        {entities.slice(0, 10).map((entity, index) => {
+          const IconComponent = entityIcons[entity.label as keyof typeof entityIcons] || Tag;
+          const colorClass = entityColors[entity.label] || 'text-gray-500';
+          return (
+            <div key={index} className="flex items-center text-sm">
+              <IconComponent size={14} className={`mr-2 ${colorClass}`} />
+              <span className="font-medium">{entity.text}</span>
+              <span className="ml-2 text-gray-500 text-xs">({entity.label})</span>
+            </div>
+          );
+        })}
       </div>
+    </div>
     );
   };
+
 
   return (
     <div className="mt-16 bg-white rounded-lg shadow-lg p-8">
@@ -120,15 +138,9 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ resumeData, jobData }) 
               Resume Analysis
             </h3>
             <div className="space-y-3 text-sm">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p><strong>File:</strong> {resumeData.filename}</p>
-                  <p><strong>Type:</strong> {resumeData.file_type?.toUpperCase()}</p>
-                </div>
-                <div>
+              <div className="flex justify-between gap-4">
                   <p><strong>Words:</strong> {resumeData.data?.word_count || 0}</p>
                   <p><strong>Characters:</strong> {resumeData.data?.char_count || 0}</p>
-                </div>
               </div>
               
               {resumeData.data?.emails?.length > 0 && (
@@ -138,13 +150,6 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ resumeData, jobData }) 
               {resumeData.data?.phones?.length > 0 && (
                 <p><strong>Phone:</strong> {resumeData.data.phones[0]}</p>
               )}
-
-              <div className="mt-4 pt-4 border-t border-blue-200">
-                <h4 className="font-medium text-blue-800 mb-2">Text Preview</h4>
-                <p className="text-xs text-gray-600 bg-white p-2 rounded border max-h-20 overflow-y-auto">
-                  {resumeData.data?.raw_text?.substring(0, 200)}...
-                </p>
-              </div>
             </div>
           </div>
         )}
@@ -194,24 +199,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ resumeData, jobData }) 
             </div>
           </div>
         )}
-      </div>
-
-      {/* Match Score Placeholder */}
-      {resumeData && jobData && (
-        <div className="mt-8 bg-purple-50 p-6 rounded-lg">
-          <h3 className="font-semibold text-purple-800 mb-4 flex items-center">
-            <Brain className="mr-2" size={20} />
-            Match Analysis
-          </h3>
-          <div className="text-center py-8">
-            <Target size={48} className="mx-auto text-purple-400 mb-4" />
-            <p className="text-purple-700 font-medium">Advanced matching coming in Day 3!</p>
-            <p className="text-purple-600 text-sm mt-2">
-              Resume and job description successfully parsed and ready for AI matching
-            </p>
-          </div>
-        </div>
-      )}
+      </div>      
     </div>
   );
 };
